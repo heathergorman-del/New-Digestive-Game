@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Digestive System Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background: #f9f9f9; text-align: center; }
+    
+    #controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 15px;
+      background: #4CAF50;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    #controls button {
+      background: white;
+      color: #4CAF50;
+      border: none;
+      padding: 10px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #controls button:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+    }
+
+    #info {
+      margin: 15px auto;
+      background: #2196F3;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    #container {
+      position: relative;
+      display: inline-block;
+      margin-top: 20px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      background: white;
+      padding: 10px;
+    }
+
+    #gameImage { width: 100%; max-width: 600px; display: block; border-radius: 10px; }
+
+    #overlay { 
+      position: absolute; 
+      top: 0; left: 0; width: 100%; height: 100%; 
+      pointer-events: none; 
+      font-size: 60px; font-weight: bold; 
+      display: flex; justify-content: center; align-items: center;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+
+    #overlay.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div id="controls">
+  <button id="startBtn">Start Game</button>
+  <button id="restartBtn">Restart Game</button>
+</div>
+
+<div id="info">
+  <p>Find: <span id="organName"></span></p>
+  <p>Score: <span id="score">0</span> | Attempts Left: <span id="attempts">3</span> | Time: <span id="timer">0</span>s</p>
+  <p id="message"></p>
+</div>
+
+<div id="container">
+  <img src="unnamed.jpg" usemap="#image-map" id="gameImage">
+  <div id="overlay"></div>
+</div>
+
+<map name="image-map">
+  <area alt="Liver" coords="394,564,412,557,428,559,444,563,458,564,471,566,491,569,504,569,518,573,527,583,509,589,493,597,486,608,472,621,463,628,463,637,451,648,438,636,425,628,408,629,399,630,392,640,391,648,400,652,411,648,421,646,431,644,432,652,420,654,412,660,404,669,396,673,392,678,380,685,371,687,368,668,365,650,364,633,365,619,369,602,372,588,380,572" shape="poly" href="#" onclick="handleClick('Liver'); return false;">
+  <area alt="Gallbladder" coords="400,633,406,631,412,631,421,632,430,633,439,641,432,645,419,642,412,643,404,645,396,646,392,638" shape="poly" href="#" onclick="handleClick('Gallbladder'); return false;">
+  <area alt="Stomach" coords="424,657,411,660,404,675,408,684,415,685,425,673,437,673,453,681,475,683,497,682,512,673,519,663,526,645,527,630,527,613,522,596,515,590,499,593,490,606,485,622,484,632,481,639,468,647,456,651,441,651" shape="poly" href="#" onclick="handleClick('Stomach'); return false;">
+  <area alt="Pancreas" coords="427,674,420,683,426,695,436,702,445,704,452,704,467,695,479,695,493,694,503,688,509,678,497,679,483,683,464,685,448,679,438,675" shape="poly" href="#" onclick="handleClick('Pancreas'); return false;">
+  <area alt="Large Intestine" coords="388,841,379,833,367,820,362,806,362,791,360,775,362,758,365,740,371,718,378,700,391,689,412,693,425,701,431,703,448,705,467,712,480,704,492,697,505,691,514,675,533,671,541,682,541,699,540,717,539,733,539,748,539,761,541,781,541,792,541,805,537,822,531,835,520,854,512,862,499,869,487,870,478,873,468,873,466,893,463,907,454,908,443,905,440,888,442,870,442,854,455,846,476,848,484,848,493,844,507,837,515,826,517,810,522,793,522,777,523,766,525,745,525,727,518,717,499,733,486,739,467,735,454,737,434,735,417,730,409,722,400,716,393,722,389,741,392,757,391,773,393,780,402,797,405,803,408,809,410,819,403,833" shape="poly" href="#" onclick="handleClick('Large Intestine'); return false;">
+  <area alt="Small Intestine" coords="404,735,398,751,395,767,397,781,406,796,413,810,416,823,406,838,412,847,427,855,436,847,449,845,463,846,477,842,498,838,508,824,512,803,512,779,514,764,518,751,519,728,503,736,484,744,458,751,436,746,416,738" shape="poly" href="#" onclick="handleClick('Small Intestine'); return false;">
+  <area alt="Anus" coords="444,908,438,914,439,926,449,925,463,922,463,912" shape="poly" href="#" onclick="handleClick('Anus'); return false;">
+  <area alt="Appendix" coords="400,840,394,853,401,861,408,862,405,850" shape="poly" href="#" onclick="handleClick('Appendix'); return false;">
+  <area alt="Esophagus" coords="461,330,458,561,473,561,468,326" shape="poly" href="#" onclick="handleClick('Esophagus'); return false;">
+  <area alt="Salivary Glands" coords="444,276,456,268,470,266,472,278,474,286,472,301,468,316,458,323,456,330,438,337,419,336,412,325,428,324,444,316,456,309,456,297,446,283" shape="poly" href="#" onclick="handleClick('Salivary Glands'); return false;">
+  <area alt="Tongue" coords="412,308,420,297,434,296,445,297,445,311,428,316,418,318" shape="poly" href="#" onclick="handleClick('Tongue'); return false;">
+  <area alt="Mouth" coords="407,304,392,300,388,308,393,316,400,314,404,313" shape="poly" href="#" onclick="handleClick('Mouth'); return false;">
+</map>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/image-map-resizer/1.0.10/js/imageMapResizer.min.js"></script>
+<script>
+window.onload = function() { imageMapResize(); };
+
+const allOrgans = ["Mouth","Tongue","Salivary Glands","Esophagus","Stomach","Liver","Gallbladder","Pancreas","Small Intestine","Large Intestine","Appendix","Anus"];
+let organs=[], currentIndex=0, score=0, attempts=3, time=0, timerInterval=null, gameStarted=false;
+const overlay=document.getElementById("overlay");
+
+function shuffle(array){ for(let i=array.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [array[i],array[j]]=[array[j],array[i]]; } return array; }
+
+function startGame(){
+  organs=shuffle([...allOrgans]); currentIndex=0; score=0; attempts=3; time=0; gameStarted=true;
+  document.getElementById("score").textContent=score;
+  document.getElementById("attempts").textContent=attempts;
+  document.getElementById("timer").textContent=time;
+  document.getElementById("message").textContent="";
+  document.getElementById("organName").textContent=organs[currentIndex];
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{time++; document.getElementById("timer").textContent=time;},1000);
+}
+
+function restartGame(){ startGame(); }
+
+function showFlash(symbol,color){
+  overlay.textContent=symbol; overlay.style.color=color; overlay.classList.add('show');
+  setTimeout(()=>{overlay.classList.remove('show');},500);
+}
+
+function handleClick(selected){
+  if(!gameStarted) return;
+  if(selected===organs[currentIndex]){
+    showFlash("✅","green");
+    if(attempts===3) score+=10;
+    else if(attempts===2) score+=7;
+    else score+=5;
+    document.getElementById("score").textContent=score;
+    nextOrgan();
+  } else {
+    attempts--;
+    document.getElementById("attempts").textContent=attempts;
+    showFlash("❌","red");
+    if(attempts===0){
+      document.getElementById("message").textContent="Out of attempts! Correct: "+organs[currentIndex];
+      nextOrgan();
+    }
+  }
+}
+
+function nextOrgan(){
+  currentIndex++; attempts=3; document.getElementById("attempts").textContent=attempts;
+  if(currentIndex>=organs.length){
+    clearInterval(timerInterval);
+    document.getElementById("organName").textContent="Game Over!";
+    document.getElementById("message").textContent="Final Score: "+score+" | Time: "+time+"s";
+  } else {
+    document.getElementById("organName").textContent=organs[currentIndex];
+    document.getElementById("message").textContent="";
+  }
+}
+
+document.getElementById("startBtn").addEventListener("click",startGame);
+document.getElementById("restartBtn").addEventListener("click",restartGame);
+</script>
